@@ -1,0 +1,52 @@
+<% content_for :title, "Meus Pedidos" %>
+<style>
+  .page-header { margin-bottom: 2rem; }
+  .page-title { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+  .page-sub { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .orders-list { display: flex; flex-direction: column; gap: 1rem; }
+  .order-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: inherit; transition: border-color 0.2s; }
+  .order-card:hover { border-color: var(--border2); }
+  .order-id { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .order-date { font-size: 14px; font-weight: 500; }
+  .order-address { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+  .order-total { font-family: var(--mono); font-size: 18px; color: var(--green); font-weight: 600; }
+  .status-badge { font-family: var(--mono); font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid; margin-top: 6px; display: inline-block; }
+  .status-pending   { color: var(--amber); border-color: rgba(227,179,65,0.3); background: rgba(227,179,65,0.08); }
+  .status-shipped   { color: var(--blue);  border-color: rgba(88,166,255,0.3);  background: rgba(88,166,255,0.07); }
+  .status-delivered { color: var(--green); border-color: rgba(63,185,80,0.3);  background: rgba(63,185,80,0.07); }
+  .idor-hint { background: rgba(255,107,107,0.07); border: 1px solid rgba(255,107,107,0.2); border-radius: 8px; padding: 0.875rem 1rem; font-family: var(--mono); font-size: 11px; color: #ffa8a8; margin-bottom: 1.5rem; }
+  .idor-hint strong { color: var(--red); }
+  .empty { text-align: center; padding: 4rem; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+</style>
+
+<div class="idor-hint">
+  <strong>⚠ LAB — IDOR:</strong> tente acessar /orders/1, /orders/2, /orders/3... para ver pedidos de outros usuários.
+</div>
+
+<div class="page-header">
+  <div class="page-title">Meus pedidos</div>
+  <div class="page-sub">// <%= @orders.count %> pedidos encontrados</div>
+</div>
+
+<% if @orders.any? %>
+  <div class="orders-list">
+    <% @orders.each do |order| %>
+      <%= link_to order_path(order), class: "order-card" do %>
+        <div>
+          <div class="order-id">// pedido #<%= order.id %></div>
+          <div class="order-date"><%= order.created_at.strftime("%d de %B de %Y") %></div>
+          <div class="order-address"><%= order.address %></div>
+          <span class="status-badge status-<%= order.status %>"><%= order.status %></span>
+        </div>
+        <div style="text-align:right">
+          <div class="order-total">R$ <%= number_with_precision(order.total, precision: 2, separator: ',') %></div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">
+            **** **** **** <%= order.card_last4 %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty">nenhum pedido encontrado</div>
+<% end %>

