@@ -1,0 +1,46 @@
+<% content_for :title, "Cadastro" %>
+<style>
+  .auth-wrap { max-width: 400px; margin: 4rem auto; }
+  .auth-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .auth-header { padding: 1.5rem; border-bottom: 1px solid var(--border); background: var(--bg3); }
+  .auth-eyebrow { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .auth-title { font-size: 18px; font-weight: 500; }
+  .auth-body { padding: 1.5rem; }
+  .field { margin-bottom: 1rem; }
+  .field label { display: block; font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .field input { width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: 6px; padding: 9px 12px; font-size: 14px; color: var(--text); font-family: var(--mono); outline: none; }
+  .field input:focus { border-color: var(--green); }
+  .btn-primary { width: 100%; background: var(--green); color: #000; border: none; border-radius: 6px; padding: 10px; font-size: 14px; font-family: var(--mono); cursor: pointer; margin-top: 0.5rem; }
+  .btn-primary:hover { opacity: 0.85; }
+  .auth-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
+  .auth-footer a { color: var(--blue); text-decoration: none; }
+</style>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-eyebrow">// novo usuário</div>
+      <div class="auth-title">Criar conta</div>
+    </div>
+    <div class="auth-body">
+      <%= form_with url: "/users", method: :post, local: true do |f| %>
+        <div class="field">
+          <%= f.label :name, "// nome" %>
+          <%= f.text_field :name, name: "user[name]", placeholder: "Seu nome completo" %>
+        </div>
+        <div class="field">
+          <%= f.label :email, "// email" %>
+          <%= f.email_field :email, name: "user[email]", placeholder: "usuario@exemplo.com" %>
+        </div>
+        <div class="field">
+          <%= f.label :password, "// senha" %>
+          <%= f.password_field :password, name: "user[password]", placeholder: "mínimo 6 caracteres" %>
+        </div>
+        <%= f.submit "Criar conta →", class: "btn-primary" %>
+      <% end %>
+    </div>
+    <div class="auth-footer">
+      Já tem conta? <%= link_to "Entrar", login_path %>
+    </div>
+  </div>
+</div>

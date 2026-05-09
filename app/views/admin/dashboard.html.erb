@@ -1,0 +1,81 @@
+<% content_for :title, "Admin" %>
+<style>
+  .admin-header { margin-bottom: 2rem; }
+  .admin-title { font-size: 22px; font-weight: 500; }
+  .admin-sub { font-family: var(--mono); font-size: 11px; color: var(--red); margin-top: 4px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; }
+  .stat-label { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+  .stat-value { font-family: var(--mono); font-size: 28px; font-weight: 600; color: var(--text); }
+  .stat-unit { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .admin-nav { display: flex; gap: 8px; margin-bottom: 2rem; }
+  .admin-nav-link { font-family: var(--mono); font-size: 12px; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border); color: var(--muted); text-decoration: none; }
+  .admin-nav-link:hover { color: var(--text); border-color: var(--border2); }
+  .admin-nav-link.active { color: var(--red); border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.07); }
+  .section-title { font-size: 15px; font-weight: 500; margin-bottom: 1rem; }
+  .orders-table { width: 100%; border-collapse: collapse; }
+  .orders-table th { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  .orders-table td { font-size: 13px; padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--muted); }
+  .orders-table tr:hover td { background: var(--bg3); }
+  .orders-table a { color: var(--blue); text-decoration: none; font-family: var(--mono); font-size: 11px; }
+</style>
+
+<div class="admin-header">
+  <div class="admin-title">Painel Admin</div>
+  <div class="admin-sub">// acesso restrito — role: admin</div>
+</div>
+
+<div class="admin-nav">
+  <%= link_to "Dashboard", admin_dashboard_path, class: "admin-nav-link active" %>
+  <%= link_to "Usuários", admin_users_path, class: "admin-nav-link" %>
+  <%= link_to "Livros", admin_books_path, class: "admin-nav-link" %>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">// usuários</div>
+    <div class="stat-value"><%= @users %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">// livros</div>
+    <div class="stat-value"><%= @books %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">// pedidos</div>
+    <div class="stat-value"><%= @orders %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">// receita total</div>
+    <div class="stat-value">
+      R$ <%= number_with_precision(@revenue, precision: 0, delimiter: '.') %>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">Pedidos recentes</div>
+<table class="orders-table">
+  <thead>
+    <tr>
+      <th>#ID</th>
+      <th>CLIENTE</th>
+      <th>EMAIL</th>
+      <th>TOTAL</th>
+      <th>STATUS</th>
+      <th>DATA</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @recent_orders.each do |order| %>
+      <tr>
+        <td style="font-family:var(--mono);color:var(--text)">#<%= order.id %></td>
+        <td style="color:var(--text)"><%= order.user.name %></td>
+        <td><%= order.user.email %></td>
+        <td style="font-family:var(--mono);color:var(--green)">R$ <%= number_with_precision(order.total, precision: 2) %></td>
+        <td><%= order.status %></td>
+        <td style="font-family:var(--mono);font-size:11px;"><%= order.created_at.strftime("%d/%m/%Y") %></td>
+        <td><%= link_to "ver →", order_path(order) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

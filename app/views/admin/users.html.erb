@@ -1,0 +1,51 @@
+<% content_for :title, "Admin — Usuários" %>
+<style>
+  .admin-nav { display: flex; gap: 8px; margin-bottom: 2rem; }
+  .admin-nav-link { font-family: var(--mono); font-size: 12px; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border); color: var(--muted); text-decoration: none; }
+  .admin-nav-link:hover { color: var(--text); border-color: var(--border2); }
+  .admin-nav-link.active { color: var(--red); border-color: rgba(255,107,107,0.3); background: rgba(255,107,107,0.07); }
+  .page-title { font-size: 20px; font-weight: 500; margin-bottom: 0.5rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--muted); }
+  tr:hover td { background: var(--bg3); }
+  .hash-cell { font-family: var(--mono); font-size: 10px; color: var(--red); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .role-admin { color: var(--red); font-family: var(--mono); font-size: 11px; }
+  .role-user  { color: var(--green); font-family: var(--mono); font-size: 11px; }
+</style>
+
+<div class="admin-nav">
+  <%= link_to "Dashboard", admin_dashboard_path, class: "admin-nav-link" %>
+  <%= link_to "Usuários", admin_users_path, class: "admin-nav-link active" %>
+  <%= link_to "Livros", admin_books_path, class: "admin-nav-link" %>
+</div>
+
+<div class="page-title">Usuários</div>
+<p style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:1.5rem;">// <%= @users.count %> usuários cadastrados</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>NOME</th>
+      <th>EMAIL</th>
+      <th>ROLE</th>
+      <th>CRÉDITOS</th>
+      <th>DIGEST</th>
+      <th>CRIADO EM</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td style="font-family:var(--mono)">#<%= user.id %></td>
+        <td style="color:var(--text)"><%= user.name %></td>
+        <td><%= user.email %></td>
+        <td><span class="role-<%= user.role %>"><%= user.role %></span></td>
+        <td style="font-family:var(--mono);color:var(--amber)"><%= user.credits %></td>
+        <td class="hash-cell" title="<%= user.password_digest %>"><%= user.password_digest %></td>
+        <td style="font-family:var(--mono);font-size:10px;"><%= user.created_at.strftime("%d/%m/%Y") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
