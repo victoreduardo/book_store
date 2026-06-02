@@ -30,3 +30,16 @@ jobs:
         if: always()
         with:
           sarif_file: brakeman.sarif
+
+      - name: Audit gems
+        run: |
+          gem install bundler-audit
+          bundle-audit update
+          bundle-audit check \
+            --format json \
+            --output audit.json
+
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: audit.json
