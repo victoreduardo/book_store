@@ -1,0 +1,32 @@
+name: Security Pipeline
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: SAST · Brakeman
+        run: |
+          gem install brakeman
+          brakeman \
+            --no-pager \
+            --format sarif \
+            --output brakeman.sarif \
+            --exit-on-warn
+
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: brakeman.sarif
