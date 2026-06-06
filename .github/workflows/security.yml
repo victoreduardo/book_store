@@ -25,7 +25,7 @@ jobs:
             --format json \
             --output audit.json
 
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: audit.json
@@ -39,7 +39,7 @@ jobs:
             --output brakeman.sarif \
             --exit-on-warn
 
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: brakeman.sarif
